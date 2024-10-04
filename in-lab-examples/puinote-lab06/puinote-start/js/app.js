@@ -76,6 +76,7 @@ function deleteNote(notecard) {
 
   // remove the actual Notecard object from our set of notecards
   notecardSet.delete(notecard);
+  saveToLocalStorage();
 }
 
 
@@ -83,5 +84,49 @@ function deleteNote(notecard) {
 
 function submitNote() {
   // Nothing here yet!
-  console.log("Submitted Note!")
+  console.log(notecardSet)
+  const noteEditorTitle = document.querySelector('#note-editor-title');
+  const editorTitleText = noteEditorTitle.value;
+
+  const noteEditorBody = document.querySelector('#note-editor-body');
+  const editorBodyText = noteEditorBody.value;
+
+  const noteEditorImage = document.querySelector('#note-editor-image');
+  const editorImageURL = noteEditorImage.src;
+
+  const notecard = addNewNote(editorImageURL, editorTitleText, editorBodyText);
+  createElement(notecard);
+  saveToLocalStorage();
+}
+
+function saveToLocalStorage() {
+  //copy set to array
+  const notecardArray = Array.from(notecardSet);
+  console.log(notecardArray);
+
+  //stringify objects in array
+  const notecardArrayString = JSON.stringify(notecardArray);
+  console.log(notecardArrayString);
+
+  //set local storage
+  localStorage.setItem('storedNotes', notecardArrayString);
+
+}
+
+function retrieveFromLocalStorage() {
+  const notecardArrayString = localStorage.getItem('storedNotes');
+  
+  //JSON.parse does the oposite of stringify (so objectify?)
+  const notecardArray = JSON.parse(notecardArrayString);
+  console.log(notecardArray);
+  for (const noteData of notecardArray) {
+    const notecard = addNewNote(noteData.noteImageURL, noteData.noteTitle,
+      noteData.noteBody);
+    createElement(notecard);
+  }
+}
+
+//retrieve from local storage upon load
+if (localStorage.getItem('storedNotes') != null) {
+  retrieveFromLocalStorage();
 }
